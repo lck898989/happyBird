@@ -1,2 +1,2 @@
-# happyBird
-A game of cocos creator
+# hello-world
+Hello world new project template.
