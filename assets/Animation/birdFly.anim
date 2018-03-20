@@ -1,0 +1,48 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "birdFly",
+  "_objFlags": 0,
+  "_rawFiles": null,
+  "_duration": 0.26666666666666666,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "props": {
+      "position": [
+        {
+          "frame": 0,
+          "value": [
+            -400,
+            0
+          ]
+        }
+      ]
+    },
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "43b1d28b-b29a-430a-ad31-a32428fea484"
+            }
+          },
+          {
+            "frame": 0.11666666666666667,
+            "value": {
+              "__uuid__": "bbeea4c7-e926-4923-91c6-c4d382d3d627"
+            }
+          },
+          {
+            "frame": 0.25,
+            "value": {
+              "__uuid__": "047e9aa0-c404-4b0a-92cd-2ffff9764d0d"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

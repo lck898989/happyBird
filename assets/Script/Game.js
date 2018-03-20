@@ -78,6 +78,8 @@ cc.Class({
             //将分数拆成数项 比如 32 拆成 3 和 2
             var scoreString = this.score.toString();
             if(scoreString.length - preScoreString.length === 1){
+                //创建新节点之前需要将前一个节点的x坐标左移
+                this.newNodeArray[this.newNodeArray.length - 1].x -= this.newNodeArray[this.newNodeArray.length - 1].width / 2;
                 //再创建一个节点
                 var newNodeLocationX = this.newNodeArray[this.newNodeArray.length - 1].x + this.newNodeArray[this.newNodeArray.length - 1].width;
                 var newNodeLocationY = this.newNodeArray[this.newNodeArray.length - 1].y;
@@ -89,6 +91,7 @@ cc.Class({
         }
         
     },
+    //动态生成新节点
     dynamicCreateNode  : function(newNodeX,newNodeY){
         var self = this;
         var newNode = new cc.Node();

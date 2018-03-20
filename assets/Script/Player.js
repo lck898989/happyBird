@@ -11,20 +11,21 @@ cc.Class({
             type           : cc.Node,
         },
         //跳跃音效资源
-        jumpAudio  : {
+        jumpAudio   : {
             default : null,
             url     : cc.AudioClip,
         },
         //撞墙音效
-        crashAudio : {
+        crashAudio  : {
             default : null,
             url     : cc.AudioClip,
-        }
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        
         cc.log("Enter the player");
         //开启碰撞检测 cc.director 是一个单列类型不需要调用任何构造函数
         var collisionManager = cc.director.getCollisionManager();
@@ -45,6 +46,9 @@ cc.Class({
     },
 
     update (dt) {
+        //加载动画资源
+        var anim = this.node.getComponent(cc.Animation);
+        anim.play('birdFly');
         cc.log(this.node.x);
         //将背景图所触发的事件结果传过来
         cc.log(this.bg1);
