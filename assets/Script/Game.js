@@ -61,7 +61,7 @@ cc.Class({
                 //如果存在了新增节点就不创建节点了加载动态资源
                 if(this.newNodeArray.length === 0){
                     //动态生成新节点
-                    this.dynamicCreateNode(newNodeX,newNodeY);
+                    var newNode = this.dynamicCreateNode(newNodeX,newNodeY);
                 }else{
                     //弹出最后一个节点
                     newNode = this.newNodeArray[this.newNodeArray.length - 1];
@@ -99,6 +99,7 @@ cc.Class({
         newNode.addComponent(cc.Sprite);
         //添加到新增节点数组中
         this.newNodeArray.push(newNode);
+        return newNode;
     },
     //计算二位数以上的数字分数方法
     caculateScore : function(scoreString){
