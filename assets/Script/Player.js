@@ -35,6 +35,8 @@ cc.Class({
         this.isCollision = false;
         //设置音效大小
         cc.audioEngine.setVolume(0.1);
+        //玩家的当前分数为零
+        this.playScore = 0;
         
     },
 
