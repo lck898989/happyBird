@@ -1,15 +1,11 @@
-// Learn cc.Class:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/class/index.html
-// Learn Attribute:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/reference/attributes/index.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://www.cocos.com/docs/creator/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/editors_and_tools/creator-chapters/scripting/life-cycle-callbacks/index.html
+/*
+ * @Author: mikey.zhaopeng 
+ * @Date: 2018-03-21 09:02:26 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-03-21 14:50:26
+ */
 cc.Class({
     extends: cc.Component,
-
     properties: {
         pipeStatus : {
             default  : null,
@@ -26,12 +22,15 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        
+        this.gameOverNode = cc.find("Canvas/gameOver");
+        this.gameOverNode.active = false;
         this.score = 0;
         //加载动态资源
         // this.loadDynamic(0,250);
         this.isAddScore = false;
         this.isAdded    = false;
+        //历史最好分数
+        this.best = 0;
         // //加载一个Prefab实例出来
         // this.numPrefabNode = cc.instantiate(this.NumPrefat);
         // //设置它的父节点
@@ -47,7 +46,7 @@ cc.Class({
         //获取PipeMove脚本组件
         this.pipeMove = this.pipeStatus.getComponent("PipeMove");
         // this.pipeMove.init();
-        //容纳新节点的数组
+        //容纳新节点的数组用于容纳分数
         this.newNodeArray = [];
         //盛放分数拆分后的数字
         this.scoreNumArray = [];
@@ -61,7 +60,7 @@ cc.Class({
                 //如果存在了新增节点就不创建节点了加载动态资源
                 if(this.newNodeArray.length === 0){
                     //动态生成新节点
-                    var newNode = this.dynamicCreateNode(newNodeX,newNodeY);
+                    var newNode = this.dynamicCreateNode(newNodeX,newNodeY,this.newNodeArray);
                 }else{
                     //弹出最后一个节点
                     newNode = this.newNodeArray[this.newNodeArray.length - 1];
@@ -83,7 +82,7 @@ cc.Class({
                 //再创建一个节点
                 var newNodeLocationX = this.newNodeArray[this.newNodeArray.length - 1].x + this.newNodeArray[this.newNodeArray.length - 1].width;
                 var newNodeLocationY = this.newNodeArray[this.newNodeArray.length - 1].y;
-                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY);
+                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.newNodeArray);
                 this.caculateScore(scoreString);
             }else{
                  this.caculateScore(scoreString);
@@ -91,8 +90,8 @@ cc.Class({
         }
         
     },
-    //动态生成新节点
-    dynamicCreateNode  : function(newNodeX,newNodeY){
+    //动态生成新节点，传参的时候
+    dynamicCreateNode  : function(newNodeX,newNodeY,nodeArray){
         var self = this;
         var newNode = new cc.Node();
         self.node.addChild(newNode);
@@ -101,7 +100,9 @@ cc.Class({
         //动态添加一个Sprite组件
         newNode.addComponent(cc.Sprite);
         //添加到新增节点数组中
-        this.newNodeArray.push(newNode);
+        if(nodeArray != null){
+            nodeArray.push(newNode);
+        }
         return newNode;
     },
     //计算二位数以上的数字分数方法
@@ -128,6 +129,7 @@ cc.Class({
         // cc.log(this.pipeMove);
         cc.log(this.pipeStatus.getComponent("PipeMove").isIn);
         cc.log(this.pipeMove);
+        cc.log(this.pipeMove.pipeNode);
         //鸟活着进来活着出去时候进行加分
         if((this.pipeMove.pipeNode.x >= this.pipeMove.minBorder) && (this.pipeMove.pipeNode.x <= this.pipeMove.maxBorder) && (!this.pipeMove.isPlayerDeath)){
             //如果是否加过分为false或者是分数为零的时候,将是否允许加分设置为true
@@ -151,6 +153,44 @@ cc.Class({
             this.loadDynamic(0,250);
             //将是否已经加过重置为true
             this.isAdded = true;
+        }
+        //如果鸟死的话将game over图片显示出来
+        if(this.pipeMove.isPlayerDeath){
+            //显示game over图片
+            // this.gameOverNode.active = true;
+            //添加等级和相关分数
+            /**
+             * 添加等级图片
+             */
+            /**
+             * 
+             * 以后需要封装的步骤
+             */
+            var newNode = new cc.Node();
+            newNode.parent = this.gameOverNode;
+            newNode.x = -83;
+            newNode.y = -8;
+            newNode.addComponent(cc.Sprite);
+            if(this.score <= 20){
+                //渲染动态资源
+                cc.loader.loadRes("atlas/Lv_B",cc.SpriteFrame,function(err,spriteFrame){
+                    var sprite = newNode.getComponent(cc.Sprite);
+                    sprite.spriteFrame = spriteFrame;
+                });
+            }else if(this.score > 20 && this.score <= 80){
+                //渲染动态资源
+                cc.loader.loadRes("atlas/Lv_S",cc.SpriteFrame,function(err,spriteFrame){
+                    var sprite = newNode.getComponent(cc.Sprite);
+                    sprite.spriteFrame = spriteFrame;
+                });
+            }
+            /***
+             * 
+             * 添加分数
+             * 
+             */
+
+            
         }
 
 

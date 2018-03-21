@@ -38,17 +38,24 @@ cc.Class({
         cc.audioEngine.setVolume(0.1);
         //玩家的当前分数为零
         this.playScore = 0;
-        
+        this.anim = this.node.getComponent(cc.Animation);
     },
 
     start () {
-
+        //获取动画的状态信息
+        this.animState = this.anim.play('birdFly');
     },
 
     update (dt) {
+        // this.node.active = false;
         //加载动画资源
-        var anim = this.node.getComponent(cc.Animation);
-        anim.play('birdFly');
+        // var anim = this.node.getComponent(cc.Animation);
+        
+        //改变动画的播放速度时候一定要先获取动画的状态
+        // cc.log(animState.speed);
+        this.animState.speed = 0.8;
+        this.animState.duration = 0.5;
+        //动画的播放速度
         cc.log(this.node.x);
         //将背景图所触发的事件结果传过来
         cc.log(this.bg1);

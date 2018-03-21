@@ -3,21 +3,13 @@
   "_name": "birdFly",
   "_objFlags": 0,
   "_rawFiles": null,
-  "_duration": 0.26666666666666666,
+  "_duration": 0.7666666666666667,
   "sample": 60,
   "speed": 1,
-  "wrapMode": 1,
+  "wrapMode": 38,
   "curveData": {
     "props": {
-      "position": [
-        {
-          "frame": 0,
-          "value": [
-            -400,
-            0
-          ]
-        }
-      ]
+      "position": []
     },
     "comps": {
       "cc.Sprite": {
@@ -25,19 +17,25 @@
           {
             "frame": 0,
             "value": {
-              "__uuid__": "43b1d28b-b29a-430a-ad31-a32428fea484"
-            }
-          },
-          {
-            "frame": 0.11666666666666667,
-            "value": {
-              "__uuid__": "bbeea4c7-e926-4923-91c6-c4d382d3d627"
+              "__uuid__": "605e86d5-58da-4548-b2e3-eb2db81ee62e"
             }
           },
           {
             "frame": 0.25,
             "value": {
-              "__uuid__": "047e9aa0-c404-4b0a-92cd-2ffff9764d0d"
+              "__uuid__": "6f168784-3835-4cc7-a310-1b00d133dc3e"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "580b3c71-cbc2-4b4e-8b0b-d1016068187f"
+            }
+          },
+          {
+            "frame": 0.75,
+            "value": {
+              "__uuid__": "605e86d5-58da-4548-b2e3-eb2db81ee62e"
             }
           }
         ]
