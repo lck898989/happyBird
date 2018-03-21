@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-21 15:48:21
+ * @Last Modified time: 2018-03-21 16:31:06
  */
 cc.Class({
     extends: cc.Component,
@@ -23,7 +23,12 @@ cc.Class({
 
     onLoad () {
         this.gameOverNode = cc.find("Canvas/gameOver");
+        //刚开始时候game over等等图标是不会显示的
         this.gameOverNode.active = false;
+        this.reBeginNode = cc.find("Canvas/return");
+        cc.log(this.reBeginNode);
+        //将返回图标重置为false不让其显示
+        this.reBeginNode.active = false;
         this.score = 0;
         //加载动态资源
         // this.loadDynamic(0,250);
@@ -128,7 +133,7 @@ cc.Class({
             this.scoreNumArray[i] = scoreString.charAt(i);
         }
         (function iterator(i){
-            if(i > self.newNodeArray.length){
+            if(i >= self.newNodeArray.length){
                 return;
             }
             //异步请求
@@ -171,7 +176,10 @@ cc.Class({
         }
         //如果鸟死的话将game over图片显示出来
         if(this.pipeMove.isPlayerDeath){
-            
+            //当鸟死亡的时候将this.newNodeArray释放掉因为这时候不需要这个对象了
+            //将this.newNodeArray重置，节省内存
+            this.newNodeArray = [];
+            this.reBeginNode.active = true;
             //显示game over图片
             this.gameOverNode.active = true;
             //添加等级和相关分数
@@ -190,7 +198,8 @@ cc.Class({
              * 
              */
             //创建以及渲染分数节点
-            this.loadDynamic("atlas/Mnum_",);
+            this.loadDynamic("atlas/Mnum_",65,14);
+
             
             
         }
