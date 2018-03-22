@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-22 10:48:03
+ * @Last Modified time: 2018-03-22 14:24:41
  */
 cc.Class({
     extends: cc.Component,
@@ -34,8 +34,6 @@ cc.Class({
         // this.loadDynamic(0,250);
         this.isAddScore = false;
         this.isAdded    = false;
-        //历史最好分数
-        this.best = 0;
         // //加载一个Prefab实例出来
         // this.numPrefabNode = cc.instantiate(this.NumPrefat);
         // //设置它的父节点
@@ -72,7 +70,7 @@ cc.Class({
      */
     loadDynamic : function(resource,newNodeX,newNodeY,newNodeArrayName,whichNode){
         var self = this;
-        if(this.score <= 9 || whichNode.name === 'gameOver'){
+        if(this.score <= 9){
              if(newNodeArrayName === 'newNodeArray'){
                     //如果存在了新增节点就不创建节点了加载动态资源
                 if(this.newNodeArray.length === 0){
@@ -83,14 +81,6 @@ cc.Class({
                     newNode = this.newNodeArray[this.newNodeArray.length - 1];
                 }
                 
-             }else if(newNodeArrayName === "gameOverScoreBoardNodeArray"){
-                if(this.gameOverScoreBoardNodeArray.length === 0){
-                    //动态生成新节点
-                    var newNode = this.dynamicCreateNode(newNodeX,newNodeY,this.gameOverScoreBoardNodeArray,whichNode);
-                }else{
-                    //弹出最后一个节点
-                    newNode = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1];
-                }
              }
              //渲染最后一个节点
              cc.loader.loadRes(resource+this.score,cc.SpriteFrame,function(err,spriteFrame){
@@ -179,6 +169,10 @@ cc.Class({
                 if(i >= self.gameOverScoreBoardNodeArray.length){
                     return;
                 }
+            }else if(newNodeArrayName === 'bestScoreBoardNodeArray'){
+                if(i >= self.bestScoreBoardNodeArray.length){
+                    return;
+                }
             }
             if(newNodeArrayName === 'newNodeArray'){
                 //异步请求
@@ -195,6 +189,15 @@ cc.Class({
                             sprite.spriteFrame = spriteFrame;
                             iterator(i + 1);
                             });
+                }
+            }else if(newNodeArrayName === 'bestScoreBoardNodeArray'){
+                if(self.bestScoreBoardNodeArray.length != 0){
+                    //异步请求
+                    cc.loader.loadRes(resource+self.scoreNumArray[i],cc.SpriteFrame,function(err,spriteFrame){
+                        var sprite = self.bestScoreBoardNodeArray[i].getComponent(cc.Sprite);
+                        sprite.spriteFrame = spriteFrame;
+                        iterator(i + 1);
+                        });
                 }
             }
         })(0);
@@ -224,20 +227,29 @@ cc.Class({
                 if(newNodeArrayName === 'newNodeArray'){
                     if(this.newNodeArray[i] === undefined){
                         //如果数组中该项为空的话进行创建节点
-                        this.dynamicCreateNode(newNodeX,newNodeY,this.newNodeArray,whichNode);
-                        this.adapterLocation(newNodeArrayName,whichNode);
+                        if(i > 0){
+                            this.adapterLocation(newNodeArrayName,whichNode);
+                        }else{
+                            this.dynamicCreateNode(newNodeX,newNodeY,this.newNodeArray,whichNode);
+                        }
                     }
                     
                 }else if(newNodeArrayName === 'gameOverScoreBoardNodeArray'){
                     if(this.gameOverScoreBoardNodeArray[i] === undefined){
-                        this.dynamicCreateNode(newNodeX,newNodeY,this.gameOverScoreBoardNodeArray,whichNode);
-                        this.adapterLocation(newNodeArrayName,whichNode);
+                        if(i > 0){
+                            this.adapterLocation(newNodeArrayName,whichNode);
+                        }else{
+                            this.dynamicCreateNode(newNodeX,newNodeY,this.gameOverScoreBoardNodeArray,whichNode);
+                        }
                     }
                    
                 }else if(newNodeArrayName === "bestScoreBoardNodeArray"){
                     if(this.bestScoreBoardNodeArray[i] === undefined){
-                        this.dynamicCreateNode(newNodeX,newNodeY,this.bestScoreBoardNodeArray,whichNode);
-                        this.adapterLocation(newNodeArrayName,whichNode);
+                        if(i > 0){
+                            this.adapterLocation(newNodeArrayName,whichNode);
+                        }else{
+                            this.dynamicCreateNode(newNodeX,newNodeY,this.bestScoreBoardNodeArray,whichNode);
+                        }
                     }
                 }
         }
@@ -248,24 +260,54 @@ cc.Class({
     adapterLocation : function(newNodeArrayName,whichNode){
         if(newNodeArrayName === 'newNodeArray'){
             //如果数组的长度大于1的时候进行调整
-            if(this.newNodeArray.length > 1){
+            if(this.newNodeArray.length >= 1){
                 //创建新节点之前需要将前一个节点的x坐标左移
                 this.newNodeArray[this.newNodeArray.length - 1].x -= this.newNodeArray[this.newNodeArray.length - 1].width / 2 - 3;
                 //再创建一个节点
                 var newNodeLocationX = this.newNodeArray[this.newNodeArray.length - 1].x + this.newNodeArray[this.newNodeArray.length - 1].width + 3;
                 var newNodeLocationY = this.newNodeArray[this.newNodeArray.length - 1].y;
+                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.newNodeArray,whichNode);
             }
             
         }else if(newNodeArrayName === 'gameOverScoreBoardNodeArray'){
             //如果数组的长度大于1的时候进行调整
-            if(this.gameOverScoreBoardNodeArray.length > 1){
-                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 3;
+            if(this.gameOverScoreBoardNodeArray.length >= 1){
+                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 15;
                 //再创建一个节点
-                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 3;
+                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 15;
                 var newNodeLocationY = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].y;
+                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.gameOverScoreBoardNodeArray,whichNode);                       
             }
             
+        }else if(newNodeArrayName === "bestScoreBoardNodeArray"){
+            if(this.bestScoreBoardNodeArray.length >= 1){
+                this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x -= this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width / 2 - 15;
+                //再创建一个节点
+                var newNodeLocationX = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x + this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width + 15;
+                var newNodeLocationY = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].y;
+                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.bestScoreBoardNodeArray,whichNode);                       
+            }
         }
+    },
+    //实现跳分的方法
+    jumpScore : function(resource,score){
+        var self = this;
+        var from = 0;
+        this.schedule(function(resource,score){
+            //根据分数创建
+            if(from >= score){
+                return;
+            }
+            //将他需要的节点数获取到
+            self.showScore(resource,from.toString(),60,14,'gameOverScoreBoardNodeArray',self.gameOverNode);
+            cc.loader.loadRes(resource+this.award,cc.SpriteFrame,function(err,spriteFrame){
+                var sprite = self.gameOverScoreBoardNodeArray[].getComponent(cc.Sprite);
+                sprite.spriteFrame = spriteFrame;
+            });
+            from += this.award;
+        },0.5);
+        
+
     },
     update (dt) {
         // cc.log(this.pipeMove);
@@ -321,15 +363,21 @@ cc.Class({
              * 
              */
             //创建以及渲染分数节点
-            this.showScore("atlas/Mnum_",this.score.toString(),65,14,'gameOverScoreBoardNodeArray',this.gameOverNode);            
-            if(this.score > this.best){
+            // this.showScore("atlas/Mnum_",this.score.toString(),60,20,'gameOverScoreBoardNodeArray',this.gameOverNode);
+            // this.jumpScore("atlas/Mnum_",this.score);   
+            //从注册表中获得最好成绩
+            this.best = cc.sys.localStorage.getItem('bestScore');
+            //如果是刚开始游戏的话将当前分数赋给最好成绩
+            if(this.best === undefined){
                 this.best = this.score;
-                //将最好成绩存储起来
-                cc.sys.localStorage.setItem('bestScore',this.best);
+                
+            }
+            if(this.score > this.best){
+                cc.sys.localStorage.setItem('bestScore',this.score);
             }
             //将最好成绩显示出来
-            this.showScore("atlas/Mnum_",this.best.toString(),65,1,'gameOverScoreBoardNodeArray',this.gameOverNode);
-            
+            this.showScore("atlas/Mnum_",this.best.toString(),60,-30,"bestScoreBoardNodeArray",this.gameOverNode);
+            // this.jumpScore("atlas/Mnum_",this.score);
         }
 
 
