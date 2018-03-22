@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-21 16:31:06
+ * @Last Modified time: 2018-03-21 18:06:23
  */
 cc.Class({
     extends: cc.Component,
@@ -53,9 +53,11 @@ cc.Class({
         // this.pipeMove.init();
         //容纳新节点的数组用于容纳分数
         this.newNodeArray = [];
+        //游戏结束的时候用于存放新节点的数组
+        this.gameOverScoreBoardNodeArray = [];
         //盛放分数拆分后的数字
         this.scoreNumArray = [];
-        this.loadDynamic("atlas/Mnum_",0,250);
+        this.loadDynamic("atlas/Mnum_",0,250,this.newNodeArray,this.node);
     },
     //动态加载资源方法,图片生成的位置信息也穿进去
     /**
@@ -63,18 +65,19 @@ cc.Class({
      * @param：resource 需要加载的资源
      * @param：newNodeX 需要生成新节点的X坐标
      * @param：newNodeY 需要生成节点的Y坐标
-     * 
+     * @param：newNodeArray  需要创建的新节点数组
+     * @param: whichNode 需要在哪个节点下动态加载渲染
      */
-    loadDynamic : function(resource,newNodeX,newNodeY){
+    loadDynamic : function(resource,newNodeX,newNodeY,newNodeArray,whichNode){
         var self = this;
-        if(this.score <= 9){
+        if(this.score <= 9 || whichNode.name === 'gameOver'){
                 //如果存在了新增节点就不创建节点了加载动态资源
-                if(this.newNodeArray.length === 0){
+                if(newNodeArray.length === 0){
                     //动态生成新节点
-                    var newNode = this.dynamicCreateNode(newNodeX,newNodeY,this.newNodeArray,this.node);
+                    var newNode = this.dynamicCreateNode(newNodeX,newNodeY,newNodeArray,whichNode);
                 }else{
                     //弹出最后一个节点
-                    newNode = this.newNodeArray[this.newNodeArray.length - 1];
+                    newNode = newNodeArray[newNodeArray.length - 1];
                 }
                 //渲染最后一个节点
                 cc.loader.loadRes(resource+this.score,cc.SpriteFrame,function(err,spriteFrame){
@@ -87,13 +90,18 @@ cc.Class({
             var preScoreString = (this.score - this.award).toString();
             //将分数拆成数项 比如 32 拆成 3 和 2
             var scoreString = this.score.toString();
+            //如果是game over之后不用创建一个一个新的数组了用之前的数组就行了
+            // if(whichNode.name === 'gameOver'){
+            //     newNodeArray = this.newNodeArray;
+            // }
             if(scoreString.length - preScoreString.length === 1){
                 //创建新节点之前需要将前一个节点的x坐标左移
-                this.newNodeArray[this.newNodeArray.length - 1].x -= this.newNodeArray[this.newNodeArray.length - 1].width / 2 - 3;
+                newNodeArray[newNodeArray.length - 1].x -= newNodeArray[newNodeArray.length - 1].width / 2 - 3;
                 //再创建一个节点
-                var newNodeLocationX = this.newNodeArray[this.newNodeArray.length - 1].x + this.newNodeArray[this.newNodeArray.length - 1].width + 3;
-                var newNodeLocationY = this.newNodeArray[this.newNodeArray.length - 1].y;
-                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.newNodeArray,this.node);
+                var newNodeLocationX = newNodeArray[newNodeArray.length - 1].x + newNodeArray[newNodeArray.length - 1].width + 3;
+                var newNodeLocationY = newNodeArray[newNodeArray.length - 1].y;
+                
+                this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,newNodeArray,whichNode);
                 this.caculateScore(resource,scoreString);
             }else{
                  this.caculateScore(resource,scoreString);
@@ -170,7 +178,7 @@ cc.Class({
             //将标记为重置为false
             this.isAddScore = false;
             //动态的加载图片资源
-            this.loadDynamic("atlas/Mnum_",0,250);
+            this.loadDynamic("atlas/Mnum_",0,250,this.newNodeArray,this.node);
             //将是否已经加过重置为true
             this.isAdded = true;
         }
@@ -178,7 +186,7 @@ cc.Class({
         if(this.pipeMove.isPlayerDeath){
             //当鸟死亡的时候将this.newNodeArray释放掉因为这时候不需要这个对象了
             //将this.newNodeArray重置，节省内存
-            this.newNodeArray = [];
+            // this.newNodeArray = [];
             this.reBeginNode.active = true;
             //显示game over图片
             this.gameOverNode.active = true;
@@ -198,9 +206,15 @@ cc.Class({
              * 
              */
             //创建以及渲染分数节点
-            this.loadDynamic("atlas/Mnum_",65,14);
-
+            this.loadDynamic("atlas/Mnum_",65,14,this.gameOverScoreBoardNodeArray,this.gameOverNode);
             
+            if(this.score > this.best){
+                this.best = this.score;
+                //将最好成绩存储起来
+                cc.sys.localStorage.setItem('bestScore',this.best);
+            }
+            //将最好成绩显示出来
+            this.loadDynamic();
             
         }
 
@@ -221,5 +235,20 @@ cc.Class({
                 sprite.spriteFrame = spriteFrame;
             });
         }
+    },
+    //游戏结束之后显示最高分的方法
+    showScore : function(resource,scoreString,newNodeX,newNodeY,newNodeArray,whichNode){
+        //获取分数字符串的长度
+        var scoreStringLength = scoreString.length;
+        //如果传递进来的数组是空的话就增加节点
+        for(var i = 0;i < scoreStringLength;i++){
+            if(newNodeArray[i] === null){
+                //如果数组中该项为空的话进行创建节点
+                this.dynamicCreateNode(newNodeX,newNodeY,newNodeArray,whichNode);
+            }else{
+                this.caculateScore();
+            }
+        }
+        
     }
 });
