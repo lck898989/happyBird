@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-23 15:06:53
+ * @Last Modified time: 2018-03-23 16:48:30
  */
 cc.Class({
     extends: cc.Component,
@@ -37,8 +37,6 @@ cc.Class({
         this.score = 0;
         //加载动态资源
         // this.loadDynamic(0,250);
-        this.isAddScore = false;
-        this.isAdded    = false;
         this.player = this.node.getChildByName('bird').getComponent("Player");
     },
     
@@ -290,40 +288,6 @@ cc.Class({
     },
     
     update (dt) {
-        // cc.log(this.pipeMove);
-        cc.log(this.pipeStatus.getComponent("PipeMove").isIn);
-        cc.log(this.pipeMove);
-        cc.log(this.pipeMove.pipeNode);
-        var preScore = this.score;
-        //鸟活着进来活着出去时候进行加分
-        if((this.pipeMove.pipeNode.x >= this.pipeMove.minBorder) && (this.pipeMove.pipeNode.x <= this.pipeMove.maxBorder) && (!this.pipeMove.isPlayerDeath)){
-            //如果是否加过分为false或者是分数为零的时候,将是否允许加分设置为true
-            if(!this.isAdded){
-                //允不允许加分
-                this.isAddScore = true;
-                
-            }
-        }
-        if(this.pipeMove.pipeNode.x <= -450 && !this.pipeMove.isPlayerDeath){
-            //如果超出柱子的右边范围那么将是否可以加分重置为false
-            this.isAddScore = false;
-            //如果超出柱子的右边范围那么将是否已经加过分重置为false
-            this.isAdded = false;
-        }
-        //如果鸟死了的话不进行加分
-        if(this.isAddScore && !this.pipeMove.isPlayerDeath && !this.isAdded){
-            //每次刷新的时候不让它再加
-            this.score += this.award;
-            //将标记为重置为false
-            this.isAddScore = false;
-            //动态的加载图片资源
-            this.loadDynamic("atlas/Mnum_",0,250,'newNodeArray',this.node);
-            //将是否已经加过重置为true
-            this.isAdded = true;
-        }
-        if(this.score > preScore){
-            this.player.playGetScoreSound();
-        }
         //如果鸟死的话将game over图片显示出来
         if(this.pipeMove.isPlayerDeath){
             //当鸟死亡的时候将this.newNodeArray释放掉因为这时候不需要这个对象了

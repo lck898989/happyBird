@@ -21,15 +21,21 @@ cc.Class({
             default : null,
             url     : cc.AudioClip,
         },
-        //得分音效
-        getScore : {
-            default : null,
-            url     : cc.AudioClip,
-        },
+        
         //游戏结束音效
         endAudio    : {
             default : null,
             url     : cc.AudioClip,
+        },
+        //得分音效
+       getScore : {
+            default : null,
+            url     : cc.AudioClip,
+        },
+        //柱子的实例
+        pipe        : {
+            default : null,
+            type    : cc.Node,
         }
     },
     editor : {
@@ -41,6 +47,8 @@ cc.Class({
         this.init();
     },
     init(){
+        //初始化柱子
+        this.pipeMoveScript = this.pipe.getComponent("PipeMove");
         var canvas = this.node.parent;
         cc.log(canvas);
         this.gameCom = canvas.getComponent("Game");
@@ -52,8 +60,6 @@ cc.Class({
         //开启debug绘制检测
         this.collisionManager.enabledDebugDraw = false;
         this.isCollision = false;
-        //设置音效大小
-        cc.audioEngine.setVolume(0.1);
         //玩家的当前分数为零
         this.playScore = 0;
         this.anim = this.node.getComponent(cc.Animation);
@@ -67,9 +73,6 @@ cc.Class({
     update (dt) {
         //持续刷新玩家分数
         this.playScore = this.gameCom.score;
-        if(this.playScore > 0){
-            this.playGetScoreSound();
-        }
         // this.node.active = false;
         //加载动画资源
         // var anim = this.node.getComponent(cc.Animation);
@@ -114,7 +117,7 @@ cc.Class({
     //播放音乐方法
     playJumpSound  : function(){
         //调用声音引擎播放声音
-        cc.audioEngine.play(this.jumpAudio,false);
+        cc.audioEngine.play(this.jumpAudio,false,0.1);
     },
     //不播放音乐释放相关资源
     stopJumpSound  : function(){
@@ -132,14 +135,13 @@ cc.Class({
     //得分音效
     playGetScoreSound : function(){
         //播放音效
-        cc.audioEngine.play(this.getScore,false);
-        //设置音量
-        cc.audioEngine.setVolume(0.8);
+        cc.audioEngine.play(this.getScore,false,0.5);
+        
     },
     //结束音效
     playEndSound     : function(){
         cc.audioEngine.play(this.endAudio,false);
-        cc.audioEngine.setVolume(0.2);
+        cc.audioEngine.setVolume(0.1);
     },
     //当碰撞发生时调用一下函数
     /**
@@ -150,61 +152,8 @@ cc.Class({
      */
     //碰撞函数死亡之后显示的东西都放到这里
     onCollisionEnter: function (other, self) {
-        //撞墙的时候播放撞墙音效
-        this.playCrashSound();
+        //如果撞上了的话将pipeMove里面的想撞重置为true
         console.log('on collision enter');
-        //将小鸟的颜色重置为红色ss
-        this.node.color = cc.Color.GRAY;
-        this.isCollision = true;
-        //将小鸟的角度调整为90度
-        this.node.rotation = 90;
-        //将动画关闭
-        this.anim.pause("birdFly");
-        //将碰撞系统关闭
-        this.collisionManager.enabled = false;
-    //     //关闭监听事件
-    //     this.bg1.off('mousedown',function(event){
-    //         //如果鸟死亡的话点击背景它的坐标不在变化
-    //        //每次点击背景图的时候他的初始速度为800
-    //            bird.BirdUpCastSpeed = 450;
-    //            _this.up = true;
-    //            //隐藏开始图标
-    //            _this.stat.active = false;
-    //            //当点击按钮的时候开始播放音效
-    //            bird.playJumpSound();
-               
-    //    });
-    //    //当第二种图片被点击的时候
-    //    this.bg2.off('mousedown',function(event){
-    //            //如果鸟死亡的话点击背景它的坐标不在变化
-    //            bird.BirdUpCastSpeed = 450;
-    //            _this.up = true;
-    //            //隐藏开始图标
-    //            _this.stat.active = false;
-    //            //当点击按钮的时候开始播放音效
-    //            bird.playJumpSound();
-           
-    //    });
-        // 碰撞系统会计算出碰撞组件在世界坐标系下的相关的值，并放到 world 这个属性里面
-        var world = self.world;
-        cc.log("world is " + world);
-        // 碰撞组件的 aabb 碰撞框
-        var aabb = world.aabb;
-        cc.log("aabb is " + aabb);
-        // 上一次计算的碰撞组件的 aabb 碰撞框
-        var preAabb = world.preAabb;
-        cc.log("preAabb is " + preAabb);
-        // 碰撞框的世界矩阵
-        var t = world.transform;
-        cc.log("t is " + t);
-        // 以下属性为圆形碰撞组件特有属性
-        var r = world.radius;
-        var p = world.position;
-
-        // 以下属性为 矩形 和 多边形 碰撞组件特有属性
-        var ps = world.points;
-        cc.log("ps is " + ps);
-        cc.log("bird is crashing with " + other.tag === 0 ? "ground" : "pipe");
         //定义这个鸟的死法
         /***
          * 规定鸟如果碰到柱子的话鸟会顺着柱子进行下落
@@ -213,15 +162,47 @@ cc.Class({
         if(other.tag == 2){
             //如果碰到柱子的话让它的速度向下
             this.BirdUpCastSpeed = -200;
-        }else{
-            //如果碰到地面的话就停下来一段时间让后下落
+           this.commonCrashing();
+        }else if(other.tag == 0){
+            this.commonCrashing()
+        }else if(other.tag == 3){
+            this.commonCrashing();
         }
-        //在碰撞函数里面调用计时器
+       
+    },
+    commonCrashing  : function(){
+        //如果碰到地面的话就停下来一段时间让后下落
+        this.collisionManager.enabled = false;
+        //撞墙的时候播放撞墙音效
+        this.playCrashSound();
+        this.node.color = cc.Color.GRAY;
+        this.isCollision = true;
+        //将小鸟的角度调整为90度
+        this.node.rotation = 90;
+        //将动画关闭
+        this.anim.pause("birdFly");
+         //在碰撞函数里面调用计时器
         cc.log(this.gameCom.score);
         this.jumpScore('atlas/Mnum_',this.gameCom.score);
         this.scheduleOnce(function(){
             this.playEndSound();
         },1);
+    },
+    /**
+     * 当碰撞结束后调用
+     * @param  {Collider} other 产生碰撞的另一个碰撞组件
+     * @param  {Collider} self  产生碰撞的自身的碰撞组件
+     */
+    onCollisionExit: function (other, self) {
+        //碰撞出去时候加分
+        if(!this.isCollisioin){
+            //如果已经碰撞了那么加分
+            this.gameCom.score += this.gameCom.award;
+            //添加得分音效
+            this.playGetScoreSound();
+        }
+        //更新分数
+        this.gameCom.loadDynamic("atlas/Mnum_",0,250,'newNodeArray',this.gameCom.node);
     },
     //实现跳分的方法
     jumpScore : function(resource,score){
