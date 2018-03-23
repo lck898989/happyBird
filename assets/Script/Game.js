@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-22 18:02:34
+ * @Last Modified time: 2018-03-23 11:00:04
  */
 cc.Class({
     extends: cc.Component,
@@ -16,7 +16,10 @@ cc.Class({
         //     default  : null,
         //     type     : cc.Prefab,
         // }
-        award    : 5
+        award    : 5,
+    },
+    editor : {
+        executionOrder : 2
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -34,14 +37,6 @@ cc.Class({
         // this.loadDynamic(0,250);
         this.isAddScore = false;
         this.isAdded    = false;
-        // //加载一个Prefab实例出来
-        // this.numPrefabNode = cc.instantiate(this.NumPrefat);
-        // //设置它的父节点
-        // this.node.addChild(this.numPrefabNode);
-        // //设置它的坐标
-        // this.numPrefabNode.setPosition(0,250);
-        // this.score = 1;
-        // this.loadDynamic();
     },
     
     start () {
@@ -272,40 +267,24 @@ cc.Class({
         }else if(newNodeArrayName === 'gameOverScoreBoardNodeArray'){
             //如果数组的长度大于1的时候进行调整
             if(this.gameOverScoreBoardNodeArray.length >= 1){
-                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 12;
+                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 3;
                 //再创建一个节点
-                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 12;
+                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 3;
                 var newNodeLocationY = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].y;
                 this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.gameOverScoreBoardNodeArray,whichNode);                       
             }
             
         }else if(newNodeArrayName === "bestScoreBoardNodeArray"){
             if(this.bestScoreBoardNodeArray.length >= 1){
-                this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x -= this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width / 2 - 15;
+                this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x -= this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width / 2 + 3;
                 //再创建一个节点
-                var newNodeLocationX = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x + this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width + 15;
+                var newNodeLocationX = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x + this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width + 18;
                 var newNodeLocationY = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].y;
                 this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.bestScoreBoardNodeArray,whichNode);                       
             }
         }
     },
-    //实现跳分的方法
-    jumpScore : function(resource,score){
-        var self = this;
-        var from = 0;
-        var x = null;
-        this.schedule(function(x,resource,score){
-            //根据分数创建
-            if(from > score){
-                return;
-            }
-            //将他需要的节点数组获取到 
-            self.showScore(resource,from.toString(),60,14,'gameOverScoreBoardNodeArray',self.gameOverNode);
-            from += self.award;
-        },0.5);
-        
-
-    },
+    
     update (dt) {
         // cc.log(this.pipeMove);
         cc.log(this.pipeStatus.getComponent("PipeMove").isIn);
@@ -352,7 +331,7 @@ cc.Class({
              * 
              * 以后需要封装的步骤
              */
-            var newNode = this.dynamicCreateNode(-83,-5,null,this.gameOverNode);
+            var newNode = this.dynamicCreateNode(-83,-10,null,this.gameOverNode);
             this.renderMedal(newNode,this.score);
             /***
              * 
@@ -369,7 +348,7 @@ cc.Class({
                 this.best = this.score;
                 
             }
-            if(this.score > this.best){
+            if(this.score >= this.best){
                 cc.sys.localStorage.setItem('bestScore',this.score);
             }
             //将最好成绩显示出来

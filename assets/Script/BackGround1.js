@@ -26,41 +26,54 @@ cc.Class({
         moveSpeed   : 18,
 
     },
-
-    // LIFE-CYCLE CALLBACKS:
-
-    onLoad () {
-        this.up = false;
-        this.g = -1200;
-        var bird = this.player.getComponent("Player");
-        // this.g  = -1000;
-        var _this = this;
-        //当一张背景图片被点击的时候将up重置为true
-        this.node.on('mousedown',function(event){
-            //每次点击背景图的时候他的初始速度为800
-            bird.BirdUpCastSpeed = 450;
-            _this.up = true;
-            //隐藏开始图标
-            _this.stat.active = false;
-            //当点击按钮的时候开始播放音效
-            bird.playJumpSound();
-        });
-        //当第二种图片被点击的时候
-        this.bg2.on('mousedown',function(event){
-            bird.BirdUpCastSpeed = 450;
-            _this.up = true;
-            //隐藏开始图标
-            _this.stat.active = false;
-            //当点击按钮的时候开始播放音效
-            bird.playJumpSound();
-        });
-        
+    editor : {
+        executionOrder : 1
     },
 
+    // LIFE-CYCLE CALLBACKS:
+    
+    onLoad () {
+        this.init();
+        
+    },
+    init(){
+        this.up = false;
+        this.g = -1200;
+        this.bird = this.player.getComponent("Player");
+        // this.g  = -1000;
+        var _this = this;
+        this.node.on('mousedown',function(event){
+            _this.bird.BirdUpCastSpeed = 450;
+            _this.up = true;
+            _this.stat.active = false;
+            if(!_this.bird.isCollision){
+                _this.bird.playJumpSound();
+            }
+        });
+        this.bg2.on('mousedown',function(event){
+            _this.bird.BirdUpCastSpeed = 450;
+            _this.up = true;
+            _this.stat.active = false;
+            if(!_this.bird.isCollision){
+                _this.bird.playJumpSound();
+            }
+            
+        });
+    },
+    clickDown : function(){
+        //每次点击背景图的时候他的初始速度为800
+        var backScript = this.getComponent("BackGround1");
+        backScript.bird.BirdUpCastSpeed = 450;
+        backScript.up = true;
+        //隐藏开始图标
+        backScript.stat.active = false;
+        //当点击按钮的时候开始播放音效
+        backScript.bird.playJumpSound();
+    },
     start () {
 
     },
-    //当鼠标按下的时候会一直加速直达减速为零
+    //背景图片滚动方法
     update (dt) {
           //父节点的宽度
           var parentWidth = this.node.parent.width;
@@ -76,6 +89,14 @@ cc.Class({
               var nodeX = this.node.x;
               this.bg2.x = parentWidth + nodeX;
           }
-          
     },
+    // onEnable  : function(){
+    //     var self = this;
+    //    this.node.on('mousedown',self.clickDown(self.bird,self));
+    // },
+    // //关闭相关监听事件
+    // onDisable : function(){
+    //     var self = this;
+    //     this.node.off('mousedown',self.clickDown(self.bird,self));
+    // }
 });

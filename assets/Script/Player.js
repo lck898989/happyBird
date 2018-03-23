@@ -11,6 +11,10 @@ cc.Class({
             default        : null,
             type           : cc.Node,
         },
+        bg2                :{
+            default        : null,
+            type           : cc.Node,
+        },
         //跳跃音效资源
         jumpAudio   : {
             default : null,
@@ -22,10 +26,15 @@ cc.Class({
             url     : cc.AudioClip,
         },
     },
-
+    editor : {
+        executionOrder : -1
+    },
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        this.init();
+    },
+    init(){
         var canvas = this.node.parent;
         cc.log(canvas);
         this.gameCom = canvas.getComponent("Game");
@@ -42,8 +51,8 @@ cc.Class({
         //玩家的当前分数为零
         this.playScore = 0;
         this.anim = this.node.getComponent(cc.Animation);
+        this.isMove = true;
     },
-
     start () {
         //获取动画的状态信息
         this.animState = this.anim.play('birdFly');
@@ -58,17 +67,10 @@ cc.Class({
         // cc.log(animState.speed);
         this.animState.speed = 0.8;
         this.animState.duration = 0.5;
-        //动画的播放速度
-        cc.log(this.node.x);
-        //将背景图所触发的事件结果传过来
-        cc.log(this.bg1);
-        //获得背景图下的脚本组件
         var backGround = this.bg1.getComponent("BackGround1");
-        //打印backGround的属性值
-        cc.log(this.BirdUpCastSpeed);
         // cc.log(backGround.g)
         //如果为上升状态
-        if(backGround.up){
+        if(backGround.up && this.isMove){
             //获得上升的标记
             cc.log("backGround.up is " + backGround.up);
             //获得重力加速度
@@ -83,18 +85,20 @@ cc.Class({
                 // cc.repeatForever(cc.sequence(callback));
                 // this.playJumpSound();
             }else{
-                // //开启一个计时器
-                this.scheduleOnce(function(){
-                     console.log("delay one second");
-                     this.node.y = this.node.y;
-                },3);
-                // this.BirdUpCastSpeed = -200;
-                //如果碰上了马上下落
-                this.BirdUpCastSpeed = this.BirdUpCastSpeed + (backGround.g * dt);
-                this.node.y = this.node.y + this.BirdUpCastSpeed * dt;
+                backGround.up = false;
+                this.isMove = false;
+                
             }
             
        }
+       if(!this.isMove){
+            this.scheduleOnce(function(){
+                cc.log("adasd");
+            },2);
+            this.BirdUpCastSpeed = -600 + backGround.g * dt;
+            this.node.y = this.node.y + this.BirdUpCastSpeed * dt;
+       }
+      
     },
     //播放音乐方法
     playJumpSound  : function(){
@@ -126,8 +130,36 @@ cc.Class({
         //撞墙的时候播放撞墙音效
         this.playCrashSound();
         console.log('on collision enter');
-        this.node.color = cc.Color.RED;
+        //将小鸟的颜色重置为红色ss
+        this.node.color = cc.Color.GRAY;
         this.isCollision = true;
+        //将小鸟的角度调整为90度
+        this.node.rotation = 90;
+        //将动画关闭
+        this.anim.pause("birdFly");
+    //     //关闭监听事件
+    //     this.bg1.off('mousedown',function(event){
+    //         //如果鸟死亡的话点击背景它的坐标不在变化
+    //        //每次点击背景图的时候他的初始速度为800
+    //            bird.BirdUpCastSpeed = 450;
+    //            _this.up = true;
+    //            //隐藏开始图标
+    //            _this.stat.active = false;
+    //            //当点击按钮的时候开始播放音效
+    //            bird.playJumpSound();
+               
+    //    });
+    //    //当第二种图片被点击的时候
+    //    this.bg2.off('mousedown',function(event){
+    //            //如果鸟死亡的话点击背景它的坐标不在变化
+    //            bird.BirdUpCastSpeed = 450;
+    //            _this.up = true;
+    //            //隐藏开始图标
+    //            _this.stat.active = false;
+    //            //当点击按钮的时候开始播放音效
+    //            bird.playJumpSound();
+           
+    //    });
         // 碰撞系统会计算出碰撞组件在世界坐标系下的相关的值，并放到 world 这个属性里面
         var world = self.world;
         cc.log("world is " + world);
@@ -161,6 +193,29 @@ cc.Class({
         }
         //在碰撞函数里面调用计时器
         cc.log(this.gameCom.score);
-         this.gameCom.jumpScore('atlas/Mnum_',this.gameCom.score);
+        this.jumpScore('atlas/Mnum_',this.gameCom.score);
     },
+    //实现跳分的方法
+    jumpScore : function(resource,score){
+        this.playScore = score;
+        this.resource = resource;
+        var self = this.gameCom;
+        this.from = 0;
+        var x = null;
+       
+        this.schedule(function(){
+            //根据分数创建
+            if(this.from > this.playScore){
+                return;
+            }
+            //将他需要的节点数组获取到 
+            self.showScore(this.resource,this.from.toString(),60,14,'gameOverScoreBoardNodeArray',self.gameOverNode);
+            this.from += self.award;
+        },0.1);
+        
+
+    },
+    afterDeathDown : function(){
+        
+    }
 });

@@ -27,15 +27,24 @@ cc.Class({
         //         this._bar = value;
         //     }
         // },
+        resetGame : false,
     },
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {},
+    onLoad () {
+        var self = this;
+        this.node.on('mousedown',function(){
+            self.resetGame = true;
+            cc.game.restart();
+        });
+    },
 
     start () {
 
     },
 
-    // update (dt) {},
+    update (dt) {
+
+    },
 });
