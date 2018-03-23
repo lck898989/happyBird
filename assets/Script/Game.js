@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-22 14:24:41
+ * @Last Modified time: 2018-03-22 18:02:34
  */
 cc.Class({
     extends: cc.Component,
@@ -272,9 +272,9 @@ cc.Class({
         }else if(newNodeArrayName === 'gameOverScoreBoardNodeArray'){
             //如果数组的长度大于1的时候进行调整
             if(this.gameOverScoreBoardNodeArray.length >= 1){
-                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 15;
+                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 12;
                 //再创建一个节点
-                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 15;
+                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 12;
                 var newNodeLocationY = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].y;
                 this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.gameOverScoreBoardNodeArray,whichNode);                       
             }
@@ -293,18 +293,15 @@ cc.Class({
     jumpScore : function(resource,score){
         var self = this;
         var from = 0;
-        this.schedule(function(resource,score){
+        var x = null;
+        this.schedule(function(x,resource,score){
             //根据分数创建
-            if(from >= score){
+            if(from > score){
                 return;
             }
-            //将他需要的节点数获取到
+            //将他需要的节点数组获取到 
             self.showScore(resource,from.toString(),60,14,'gameOverScoreBoardNodeArray',self.gameOverNode);
-            cc.loader.loadRes(resource+this.award,cc.SpriteFrame,function(err,spriteFrame){
-                var sprite = self.gameOverScoreBoardNodeArray[].getComponent(cc.Sprite);
-                sprite.spriteFrame = spriteFrame;
-            });
-            from += this.award;
+            from += self.award;
         },0.5);
         
 

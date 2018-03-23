@@ -1,3 +1,4 @@
+
 //鸟的相关属性 
 cc.Class({
     extends: cc.Component,
@@ -25,7 +26,9 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        
+        var canvas = this.node.parent;
+        cc.log(canvas);
+        this.gameCom = canvas.getComponent("Game");
         cc.log("Enter the player");
         //开启碰撞检测 cc.director 是一个单列类型不需要调用任何构造函数
         var collisionManager = cc.director.getCollisionManager();
@@ -118,6 +121,7 @@ cc.Class({
      * @param  {Collider} self  产生碰撞的自身的碰撞组件
      * 
      */
+    //碰撞函数死亡之后显示的东西都放到这里
     onCollisionEnter: function (other, self) {
         //撞墙的时候播放撞墙音效
         this.playCrashSound();
@@ -154,7 +158,9 @@ cc.Class({
             this.BirdUpCastSpeed = -200;
         }else{
             //如果碰到地面的话就停下来一段时间让后下落
-            
         }
+        //在碰撞函数里面调用计时器
+        cc.log(this.gameCom.score);
+         this.gameCom.jumpScore('atlas/Mnum_',this.gameCom.score);
     },
 });
