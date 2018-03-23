@@ -350,12 +350,17 @@
     "bg1": {
       "__id__": 3
     },
-    "bg2": null,
     "jumpAudio": {
       "__uuid__": "44693dee-4f2c-4174-95dc-fde35002fc6b"
     },
     "crashAudio": {
       "__uuid__": "acbf5482-3b52-45b8-8d35-29861693be94"
+    },
+    "getScore": {
+      "__uuid__": "4872e1e9-3b53-422c-97de-431f126cb1c9"
+    },
+    "endAudio": {
+      "__uuid__": "69681d78-4ad3-403d-8b32-5b03919b8cae"
     }
   },
   {

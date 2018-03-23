@@ -11,10 +11,6 @@ cc.Class({
             default        : null,
             type           : cc.Node,
         },
-        bg2                :{
-            default        : null,
-            type           : cc.Node,
-        },
         //跳跃音效资源
         jumpAudio   : {
             default : null,
@@ -25,6 +21,16 @@ cc.Class({
             default : null,
             url     : cc.AudioClip,
         },
+        //得分音效
+        getScore : {
+            default : null,
+            url     : cc.AudioClip,
+        },
+        //游戏结束音效
+        endAudio    : {
+            default : null,
+            url     : cc.AudioClip,
+        }
     },
     editor : {
         executionOrder : -1
@@ -40,11 +46,11 @@ cc.Class({
         this.gameCom = canvas.getComponent("Game");
         cc.log("Enter the player");
         //开启碰撞检测 cc.director 是一个单列类型不需要调用任何构造函数
-        var collisionManager = cc.director.getCollisionManager();
+        this.collisionManager = cc.director.getCollisionManager();
         //开启碰撞系统
-        collisionManager.enabled = true;
+        this.collisionManager.enabled = true;
         //开启debug绘制检测
-        collisionManager.enabledDebugDraw = true;
+        this.collisionManager.enabledDebugDraw = false;
         this.isCollision = false;
         //设置音效大小
         cc.audioEngine.setVolume(0.1);
@@ -59,6 +65,11 @@ cc.Class({
     },
 
     update (dt) {
+        //持续刷新玩家分数
+        this.playScore = this.gameCom.score;
+        if(this.playScore > 0){
+            this.playGetScoreSound();
+        }
         // this.node.active = false;
         //加载动画资源
         // var anim = this.node.getComponent(cc.Animation);
@@ -118,6 +129,18 @@ cc.Class({
     stopCrashSound : function(){
         cc.audioEngine.uncache(this.crashAudio);
     },
+    //得分音效
+    playGetScoreSound : function(){
+        //播放音效
+        cc.audioEngine.play(this.getScore,false);
+        //设置音量
+        cc.audioEngine.setVolume(0.8);
+    },
+    //结束音效
+    playEndSound     : function(){
+        cc.audioEngine.play(this.endAudio,false);
+        cc.audioEngine.setVolume(0.2);
+    },
     //当碰撞发生时调用一下函数
     /**
      * 当碰撞产生的时候调用
@@ -137,6 +160,8 @@ cc.Class({
         this.node.rotation = 90;
         //将动画关闭
         this.anim.pause("birdFly");
+        //将碰撞系统关闭
+        this.collisionManager.enabled = false;
     //     //关闭监听事件
     //     this.bg1.off('mousedown',function(event){
     //         //如果鸟死亡的话点击背景它的坐标不在变化
@@ -194,6 +219,9 @@ cc.Class({
         //在碰撞函数里面调用计时器
         cc.log(this.gameCom.score);
         this.jumpScore('atlas/Mnum_',this.gameCom.score);
+        this.scheduleOnce(function(){
+            this.playEndSound();
+        },1);
     },
     //实现跳分的方法
     jumpScore : function(resource,score){
@@ -215,7 +243,4 @@ cc.Class({
         
 
     },
-    afterDeathDown : function(){
-        
-    }
 });

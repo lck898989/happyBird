@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-23 11:00:04
+ * @Last Modified time: 2018-03-23 15:06:53
  */
 cc.Class({
     extends: cc.Component,
@@ -17,11 +17,13 @@ cc.Class({
         //     type     : cc.Prefab,
         // }
         award    : 5,
+        //得分音效
+       
     },
     editor : {
         executionOrder : 2
     },
-
+    
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
@@ -37,6 +39,7 @@ cc.Class({
         // this.loadDynamic(0,250);
         this.isAddScore = false;
         this.isAdded    = false;
+        this.player = this.node.getChildByName('bird').getComponent("Player");
     },
     
     start () {
@@ -54,6 +57,7 @@ cc.Class({
         this.scoreNumArray = [];
         this.loadDynamic("atlas/Mnum_",0,250,"newNodeArray",this.node);
     },
+    
     //动态加载资源方法,图片生成的位置信息也穿进去
     /**
      * 
@@ -290,12 +294,14 @@ cc.Class({
         cc.log(this.pipeStatus.getComponent("PipeMove").isIn);
         cc.log(this.pipeMove);
         cc.log(this.pipeMove.pipeNode);
+        var preScore = this.score;
         //鸟活着进来活着出去时候进行加分
         if((this.pipeMove.pipeNode.x >= this.pipeMove.minBorder) && (this.pipeMove.pipeNode.x <= this.pipeMove.maxBorder) && (!this.pipeMove.isPlayerDeath)){
             //如果是否加过分为false或者是分数为零的时候,将是否允许加分设置为true
             if(!this.isAdded){
                 //允不允许加分
                 this.isAddScore = true;
+                
             }
         }
         if(this.pipeMove.pipeNode.x <= -450 && !this.pipeMove.isPlayerDeath){
@@ -314,6 +320,9 @@ cc.Class({
             this.loadDynamic("atlas/Mnum_",0,250,'newNodeArray',this.node);
             //将是否已经加过重置为true
             this.isAdded = true;
+        }
+        if(this.score > preScore){
+            this.player.playGetScoreSound();
         }
         //如果鸟死的话将game over图片显示出来
         if(this.pipeMove.isPlayerDeath){
