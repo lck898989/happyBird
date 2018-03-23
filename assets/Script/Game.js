@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-22 14:24:41
+ * @Last Modified time: 2018-03-23 17:15:00
  */
 cc.Class({
     extends: cc.Component,
@@ -16,9 +16,14 @@ cc.Class({
         //     default  : null,
         //     type     : cc.Prefab,
         // }
-        award    : 5
+        award    : 5,
+        //得分音效
+       
     },
-
+    editor : {
+        executionOrder : 2
+    },
+    
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
@@ -32,16 +37,7 @@ cc.Class({
         this.score = 0;
         //加载动态资源
         // this.loadDynamic(0,250);
-        this.isAddScore = false;
-        this.isAdded    = false;
-        // //加载一个Prefab实例出来
-        // this.numPrefabNode = cc.instantiate(this.NumPrefat);
-        // //设置它的父节点
-        // this.node.addChild(this.numPrefabNode);
-        // //设置它的坐标
-        // this.numPrefabNode.setPosition(0,250);
-        // this.score = 1;
-        // this.loadDynamic();
+        this.player = this.node.getChildByName('bird').getComponent("Player");
     },
     
     start () {
@@ -59,6 +55,7 @@ cc.Class({
         this.scoreNumArray = [];
         this.loadDynamic("atlas/Mnum_",0,250,"newNodeArray",this.node);
     },
+    
     //动态加载资源方法,图片生成的位置信息也穿进去
     /**
      * 
@@ -206,11 +203,23 @@ cc.Class({
     renderMedal  : function(newNode,score){
         if(score <= 20){
             //渲染动态资源
+            cc.loader.loadRes("atlas/Lv_A",cc.SpriteFrame,function(err,spriteFrame){
+                var sprite = newNode.getComponent(cc.Sprite);
+                sprite.spriteFrame = spriteFrame;
+            });
+        }else if(score > 20 && score <= 50){
+            //渲染动态资源
             cc.loader.loadRes("atlas/Lv_B",cc.SpriteFrame,function(err,spriteFrame){
                 var sprite = newNode.getComponent(cc.Sprite);
                 sprite.spriteFrame = spriteFrame;
             });
-        }else if(score > 20 && score <= 80){
+        }else if(score > 50 && score <= 80){
+            //渲染动态资源
+            cc.loader.loadRes("atlas/Lv_C",cc.SpriteFrame,function(err,spriteFrame){
+                var sprite = newNode.getComponent(cc.Sprite);
+                sprite.spriteFrame = spriteFrame;
+            });
+        }else{
             //渲染动态资源
             cc.loader.loadRes("atlas/Lv_S",cc.SpriteFrame,function(err,spriteFrame){
                 var sprite = newNode.getComponent(cc.Sprite);
@@ -272,73 +281,25 @@ cc.Class({
         }else if(newNodeArrayName === 'gameOverScoreBoardNodeArray'){
             //如果数组的长度大于1的时候进行调整
             if(this.gameOverScoreBoardNodeArray.length >= 1){
-                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 15;
+                this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x -= this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width / 2 - 3;
                 //再创建一个节点
-                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 15;
+                var newNodeLocationX = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].x + this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].width + 3;
                 var newNodeLocationY = this.gameOverScoreBoardNodeArray[this.gameOverScoreBoardNodeArray.length - 1].y;
                 this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.gameOverScoreBoardNodeArray,whichNode);                       
             }
             
         }else if(newNodeArrayName === "bestScoreBoardNodeArray"){
             if(this.bestScoreBoardNodeArray.length >= 1){
-                this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x -= this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width / 2 - 15;
+                this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x -= this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width / 2 + 3;
                 //再创建一个节点
-                var newNodeLocationX = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x + this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width + 15;
+                var newNodeLocationX = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].x + this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].width + 18;
                 var newNodeLocationY = this.bestScoreBoardNodeArray[this.bestScoreBoardNodeArray.length - 1].y;
                 this.dynamicCreateNode(newNodeLocationX,newNodeLocationY,this.bestScoreBoardNodeArray,whichNode);                       
             }
         }
     },
-    //实现跳分的方法
-    jumpScore : function(resource,score){
-        var self = this;
-        var from = 0;
-        this.schedule(function(resource,score){
-            //根据分数创建
-            if(from >= score){
-                return;
-            }
-            //将他需要的节点数获取到
-            self.showScore(resource,from.toString(),60,14,'gameOverScoreBoardNodeArray',self.gameOverNode);
-            cc.loader.loadRes(resource+this.award,cc.SpriteFrame,function(err,spriteFrame){
-                var sprite = self.gameOverScoreBoardNodeArray[].getComponent(cc.Sprite);
-                sprite.spriteFrame = spriteFrame;
-            });
-            from += this.award;
-        },0.5);
-        
-
-    },
+    
     update (dt) {
-        // cc.log(this.pipeMove);
-        cc.log(this.pipeStatus.getComponent("PipeMove").isIn);
-        cc.log(this.pipeMove);
-        cc.log(this.pipeMove.pipeNode);
-        //鸟活着进来活着出去时候进行加分
-        if((this.pipeMove.pipeNode.x >= this.pipeMove.minBorder) && (this.pipeMove.pipeNode.x <= this.pipeMove.maxBorder) && (!this.pipeMove.isPlayerDeath)){
-            //如果是否加过分为false或者是分数为零的时候,将是否允许加分设置为true
-            if(!this.isAdded){
-                //允不允许加分
-                this.isAddScore = true;
-            }
-        }
-        if(this.pipeMove.pipeNode.x <= -450 && !this.pipeMove.isPlayerDeath){
-            //如果超出柱子的右边范围那么将是否可以加分重置为false
-            this.isAddScore = false;
-            //如果超出柱子的右边范围那么将是否已经加过分重置为false
-            this.isAdded = false;
-        }
-        //如果鸟死了的话不进行加分
-        if(this.isAddScore && !this.pipeMove.isPlayerDeath && !this.isAdded){
-            //每次刷新的时候不让它再加
-            this.score += this.award;
-            //将标记为重置为false
-            this.isAddScore = false;
-            //动态的加载图片资源
-            this.loadDynamic("atlas/Mnum_",0,250,'newNodeArray',this.node);
-            //将是否已经加过重置为true
-            this.isAdded = true;
-        }
         //如果鸟死的话将game over图片显示出来
         if(this.pipeMove.isPlayerDeath){
             //当鸟死亡的时候将this.newNodeArray释放掉因为这时候不需要这个对象了
@@ -355,7 +316,7 @@ cc.Class({
              * 
              * 以后需要封装的步骤
              */
-            var newNode = this.dynamicCreateNode(-83,-5,null,this.gameOverNode);
+            var newNode = this.dynamicCreateNode(-83,-10,null,this.gameOverNode);
             this.renderMedal(newNode,this.score);
             /***
              * 
@@ -372,7 +333,7 @@ cc.Class({
                 this.best = this.score;
                 
             }
-            if(this.score > this.best){
+            if(this.score >= this.best){
                 cc.sys.localStorage.setItem('bestScore',this.score);
             }
             //将最好成绩显示出来
