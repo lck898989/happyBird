@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-21 09:02:26 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-23 16:48:30
+ * @Last Modified time: 2018-03-23 17:15:00
  */
 cc.Class({
     extends: cc.Component,
@@ -203,11 +203,23 @@ cc.Class({
     renderMedal  : function(newNode,score){
         if(score <= 20){
             //渲染动态资源
+            cc.loader.loadRes("atlas/Lv_A",cc.SpriteFrame,function(err,spriteFrame){
+                var sprite = newNode.getComponent(cc.Sprite);
+                sprite.spriteFrame = spriteFrame;
+            });
+        }else if(score > 20 && score <= 50){
+            //渲染动态资源
             cc.loader.loadRes("atlas/Lv_B",cc.SpriteFrame,function(err,spriteFrame){
                 var sprite = newNode.getComponent(cc.Sprite);
                 sprite.spriteFrame = spriteFrame;
             });
-        }else if(score > 20 && score <= 80){
+        }else if(score > 50 && score <= 80){
+            //渲染动态资源
+            cc.loader.loadRes("atlas/Lv_C",cc.SpriteFrame,function(err,spriteFrame){
+                var sprite = newNode.getComponent(cc.Sprite);
+                sprite.spriteFrame = spriteFrame;
+            });
+        }else{
             //渲染动态资源
             cc.loader.loadRes("atlas/Lv_S",cc.SpriteFrame,function(err,spriteFrame){
                 var sprite = newNode.getComponent(cc.Sprite);

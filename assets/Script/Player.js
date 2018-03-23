@@ -134,9 +134,10 @@ cc.Class({
     },
     //得分音效
     playGetScoreSound : function(){
+        cc.log();
         //播放音效
         cc.audioEngine.play(this.getScore,false,0.5);
-        
+
     },
     //结束音效
     playEndSound     : function(){
@@ -189,7 +190,7 @@ cc.Class({
         },1);
     },
     /**
-     * 当碰撞结束后调用
+     * 当碰撞结束后调用,就是小鸟碰撞之后出来之后并且是毫发无损的出来才加分
      * @param  {Collider} other 产生碰撞的另一个碰撞组件
      * @param  {Collider} self  产生碰撞的自身的碰撞组件
      */
@@ -198,6 +199,7 @@ cc.Class({
         if(!this.isCollisioin){
             //如果已经碰撞了那么加分
             this.gameCom.score += this.gameCom.award;
+            
             //添加得分音效
             this.playGetScoreSound();
         }
