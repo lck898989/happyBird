@@ -18,7 +18,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        this.clickCount = 1;
+        this.clickCount = 0;
     },
 
     start () {
@@ -26,16 +26,30 @@ cc.Class({
     },
 
     update (dt) {
+        var self = this;
+        // alert(self.clickCount); 1
         this.node.on('mousedown',function(){
             //如果点击次数是2的倍数进行动态加载暂停图标
-            if(this.clickCount % 2 === 0){
-                cc.loader.loadRes("atlas/atlas_29",cc.SpriteFrame,function (err, spriteFrame) {
-                    self.node.getComponent(cc.Sprite).spriteFrame = spriteFrame;
-                });
-                //重新将点击次数重置为1
-                this.clickCount = 1;
+            // alert(self.clickCount % 2);
+            if(self.clickCount % 2 === 0){
+                //暂停游戏
+                cc.game.pause();
+            }else{
+                //恢复游戏逻辑主循环
+                cc.game.resume();
             }
-            cc.game.pause();
+            
+            self.clickCount++;
+        });
+        this.node.on(cc.Node.EventType.TOUCH_START,function(){
+            if(self.clickCount % 2 === 0){
+                //暂停游戏
+                cc.game.pause();
+            }else{
+                //恢复游戏逻辑主循环
+                cc.game.resume();
+            }
+            self.clickCount++;
         })
     },
 });

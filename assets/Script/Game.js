@@ -1,12 +1,13 @@
 /*
  * @Author: mikey.zhaopeng 
- * @Date: 2018-03-21 09:02:26 
+ * @Date: 2018-03-23 08:02:30 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-23 17:15:00
+ * @Last Modified time: 2018-03-23 09:22:51
  */
 cc.Class({
     extends: cc.Component,
     properties: {
+
         pipeStatus : {
             default  : null,
             type     : cc.Node,
@@ -62,7 +63,7 @@ cc.Class({
      * @param：resource 需要加载的资源
      * @param：newNodeX 需要生成新节点的X坐标
      * @param：newNodeY 需要生成节点的Y坐标
-     * @param：newNodeArray  需要创建的新节点数组
+     * @param：newNodeArrayName  需要创建的新节点数组名称
      * @param: whichNode 需要在哪个节点下动态加载渲染
      */
     loadDynamic : function(resource,newNodeX,newNodeY,newNodeArrayName,whichNode){
@@ -150,6 +151,11 @@ cc.Class({
         return newNode;
     },
     //计算二位数以上的数字分数方法
+    /**
+     * @param:resource 资源文件路径
+     * @param:scoreString 分数的字符串形式
+     * @param:新节点数组的名字
+     */
     caculateScore : function(resource,scoreString,newNodeArrayName){
         var self = this;
         //将十位数字拆分出来
@@ -200,6 +206,10 @@ cc.Class({
         })(0);
     },
     //根据分数渲染奖牌的方法
+    /**
+     * @param:newNode 新节点
+     * @param:score 分数
+     */
     renderMedal  : function(newNode,score){
         if(score <= 20){
             //渲染动态资源
@@ -228,6 +238,14 @@ cc.Class({
         }
     },
     //游戏结束之后显示最高分的方法
+    /**
+     * @param:resource 资源文件路径
+     * @param:scoreString 分数的字符串形式
+     * @param:newNodeX 新节点的x坐标
+     * @param:newNodeY 新节点的Y坐标
+     * @param:newNodeArrayName 新节点数组的名字
+     * @param:whichNode 在哪个节点上添加子节点
+     */
     showScore : function(resource,scoreString,newNodeX,newNodeY,newNodeArrayName,whichNode){
         //获取分数字符串的长度
         var scoreStringLength = scoreString.length;
@@ -266,6 +284,11 @@ cc.Class({
            this.caculateScore(resource,scoreString,newNodeArrayName);
     },
     //当节点增加时候对其位置进行调整的方法
+    /**
+     * 调整节点数组中节点的坐标位置
+     * @param:newNodeArrayName 新节点数组的名字
+     * @param:whichNode 对哪个节点进行调整
+     */
     adapterLocation : function(newNodeArrayName,whichNode){
         if(newNodeArrayName === 'newNodeArray'){
             //如果数组的长度大于1的时候进行调整
@@ -340,8 +363,6 @@ cc.Class({
             this.showScore("atlas/Mnum_",this.best.toString(),60,-30,"bestScoreBoardNodeArray",this.gameOverNode);
             // this.jumpScore("atlas/Mnum_",this.score);
         }
-
-
     },
     
 });

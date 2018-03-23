@@ -1328,7 +1328,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "continue",
+    "_name": "stop",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -1371,8 +1371,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 326,
-      "y": -244
+      "x": 0,
+      "y": -273
     },
     "_skewX": 0,
     "_skewY": 0,
