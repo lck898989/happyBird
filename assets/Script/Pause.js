@@ -24,32 +24,37 @@ cc.Class({
     start () {
 
     },
-
     update (dt) {
         var self = this;
-        // alert(self.clickCount); 1
-        this.node.on('mousedown',function(){
-            //如果点击次数是2的倍数进行动态加载暂停图标
-            // alert(self.clickCount % 2);
-            if(self.clickCount % 2 === 0){
-                //暂停游戏
-                cc.game.pause();
-            }else{
-                //恢复游戏逻辑主循环
-                cc.game.resume();
-            }
-            
-            self.clickCount++;
-        });
-        this.node.on(cc.Node.EventType.TOUCH_START,function(){
-            if(self.clickCount % 2 === 0){
-                //暂停游戏
-                cc.game.pause();
-            }else{
-                //恢复游戏逻辑主循环
-                cc.game.resume();
-            }
-            self.clickCount++;
-        })
+       
+        //如果是安卓平台的话用的是触摸监听
+        if(cc.sys.os === cc.sys.OS_ANDROID){
+            this.node.on(cc.Node.EventType.TOUCH_START,function(){
+                if(self.clickCount % 2 === 0){
+                    //暂停游戏
+                    cc.game.pause();
+                }else{
+                    //恢复游戏逻辑主循环
+                    cc.game.resume();
+                }
+                self.clickCount++;
+            })
+        }else{
+             // alert(self.clickCount); 1
+            this.node.on('mousedown',function(){
+                //如果点击次数是2的倍数进行动态加载暂停图标
+                // alert(self.clickCount % 2);
+                if(self.clickCount % 2 === 0){
+                    //暂停游戏
+                    cc.game.pause();
+                }else{
+                    //恢复游戏逻辑主循环
+                    cc.game.resume();
+                }
+                
+                self.clickCount++;
+            });
+        }
+        
     },
 });

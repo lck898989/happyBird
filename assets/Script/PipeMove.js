@@ -38,15 +38,27 @@ cc.Class({
         //隐藏该节点，刚开始是隐藏节点信息的
         this.node.active = false;
         var _this = this;
-        this.bg1.on('mousedown',function(){
-           _this.node.active = true;
-        });
-        this.bg2.on('mousedown',function(){
-            _this.node.active = true;
-        });
-        this.stat.on('mousedown',function(){
-            _this.node.active = true;  
-        });
+        if(cc.sys.os === cc.sys.OS_ANDROID){
+            this.bg1.on('touchstart',function(){
+                _this.node.active = true;
+             });
+             this.bg2.on('touchstart',function(){
+                 _this.node.active = true;
+             });
+             this.stat.on('touchstart',function(){
+                 _this.node.active = true;  
+             });
+        }else{
+            this.bg1.on('mousedown',function(){
+                _this.node.active = true;
+             });
+             this.bg2.on('mousedown',function(){
+                 _this.node.active = true;
+             });
+             this.stat.on('mousedown',function(){
+                 _this.node.active = true;  
+             });
+        }
         
     },
     //初始化脚本资源

@@ -42,23 +42,44 @@ cc.Class({
         this.bird = this.player.getComponent("Player");
         // this.g  = -1000;
         var _this = this;
-        this.node.on('mousedown',function(event){
-            _this.bird.BirdUpCastSpeed = 450;
-            _this.up = true;
-            _this.stat.active = false;
-            if(!_this.bird.isCollision){
-                _this.bird.playJumpSound();
-            }
-        });
-        this.bg2.on('mousedown',function(event){
-            _this.bird.BirdUpCastSpeed = 450;
-            _this.up = true;
-            _this.stat.active = false;
-            if(!_this.bird.isCollision){
-                _this.bird.playJumpSound();
-            }
-            
-        });
+        //如果是安卓平台的话进行触摸监听
+        if(cc.sys.os === cc.sys.OS_ANDROID){
+            this.node.on('touchstart',function(event){
+                _this.bird.BirdUpCastSpeed = 450;
+                _this.up = true;
+                _this.stat.active = false;
+                if(!_this.bird.isCollision){
+                    _this.bird.playJumpSound();
+                }
+            });
+            this.bg2.on('touchstart',function(event){
+                _this.bird.BirdUpCastSpeed = 450;
+                _this.up = true;
+                _this.stat.active = false;
+                if(!_this.bird.isCollision){
+                    _this.bird.playJumpSound();
+                }
+                
+            });
+        }else{
+            this.node.on('mousedown',function(event){
+                _this.bird.BirdUpCastSpeed = 450;
+                _this.up = true;
+                _this.stat.active = false;
+                if(!_this.bird.isCollision){
+                    _this.bird.playJumpSound();
+                }
+            });
+            this.bg2.on('mousedown',function(event){
+                _this.bird.BirdUpCastSpeed = 450;
+                _this.up = true;
+                _this.stat.active = false;
+                if(!_this.bird.isCollision){
+                    _this.bird.playJumpSound();
+                }
+                
+            });
+        }
     },
     clickDown : function(){
         //每次点击背景图的时候他的初始速度为800
