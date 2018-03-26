@@ -34,10 +34,19 @@ cc.Class({
 
     onLoad () {
         var self = this;
-        this.node.on('mousedown',function(){
-            self.resetGame = true;
-            cc.game.restart();
-        });
+        if(cc.sys.os === cc.sys.OS_ANDROID){
+            this.node.on('touchstart',function(){
+                self.resetGame = true;
+                cc.director.loadScene("HappyBird");
+            });
+        }else{
+            this.node.on('mousedown',function(){
+                self.resetGame = true;
+                cc.director.loadScene("HappyBird");
+            });
+        }
+        this.resetGame = false;
+        
     },
 
     start () {

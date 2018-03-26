@@ -12,7 +12,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        
+        moveSpeed : 9,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -24,9 +24,9 @@ cc.Class({
     },
 
     update (dt) {
-        this.node.x -= 9;
-        if(this.node.x <= -480){
-            this.node.x = 480;
+        this.node.x -= this.moveSpeed;
+        if(this.node.x <= -this.node.parent.width / 2){
+            this.node.x = this.node.parent.width / 2;
         }
     },
 });

@@ -176,7 +176,7 @@ cc.Class({
         this.collisionManager.enabled = false;
         //撞墙的时候播放撞墙音效
         this.playCrashSound();
-        this.node.color = cc.Color.GRAY;
+        this.node.color = cc.Color.RED;
         this.isCollision = true;
         //将小鸟的角度调整为90度
         this.node.rotation = 90;
@@ -199,7 +199,6 @@ cc.Class({
         if(!this.isCollisioin){
             //如果已经碰撞了那么加分
             this.gameCom.score += this.gameCom.award;
-            
             //添加得分音效
             this.playGetScoreSound();
         }
