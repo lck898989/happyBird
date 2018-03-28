@@ -290,7 +290,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": -405,
+      "x": -352,
       "y": 0
     },
     "_skewX": 0,
@@ -1433,7 +1433,7 @@
       "width": 960,
       "height": 640
     },
-    "_fitWidth": true,
+    "_fitWidth": false,
     "_fitHeight": false
   },
   {
