@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-26 13:19:55 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-28 14:22:14
+ * @Last Modified time: 2018-03-28 14:25:25
  */
 /**
  * 
@@ -63,4 +63,4 @@ cc.Class({
     update (dt) {
        
     },
-});
+})
