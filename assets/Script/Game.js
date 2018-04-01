@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-23 08:02:30 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-03-23 09:22:51
+ * @Last Modified time: 2018-04-01 14:17:31
  */
 cc.Class({
     extends: cc.Component,
@@ -19,7 +19,11 @@ cc.Class({
         // }
         award    : 5,
         //得分音效
-       
+        //停止按钮
+       pause : {
+           default   : null,
+           type      : cc.Node,
+       }
     },
     editor : {
         executionOrder : 2
@@ -28,6 +32,10 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        Global.isPause = false;
+        if(!Global.isPause){
+            this.pause.active = false;
+        }
         this.gameOverNode = cc.find("Canvas/gameOver");
         //刚开始时候game over等等图标是不会显示的
         this.gameOverNode.active = false;
@@ -362,6 +370,29 @@ cc.Class({
             //将最好成绩显示出来
             this.showScore("atlas/Mnum_",this.best.toString(),60,-30,"bestScoreBoardNodeArray",this.gameOverNode);
             // this.jumpScore("atlas/Mnum_",this.score);
+        }
+        if(Global.isPause === true){
+            //来电的时候显示暂停按钮
+            this.pause.active = true;
+            console.log("是否暂停游戏：" + Global.isPause);  
+            //暂停所有游戏逻辑或者音效
+            cc.director.pause();
+            //接听电话之后返回游戏
+            var self = this;
+            if(cc.sys.os === cc.sys.OS_ANDROID){
+                self.pause.on('touchstart',function(){
+                    //如果是触摸了返回按钮之后自动返回游戏逻辑
+                    cc.director.resume();
+                    //将该节点隐藏
+                    self.pause.active = false;
+                })
+            }
+            self.pause.on('mousedown',function(){
+                //恢复游戏
+                cc.director.resume();
+                //将该节点隐藏
+                self.pause.active = false;
+            })
         }
     },
     
