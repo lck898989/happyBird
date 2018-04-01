@@ -2,7 +2,7 @@
  * @Author: mikey.zhaopeng 
  * @Date: 2018-03-23 08:02:30 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-01 14:17:31
+ * @Last Modified time: 2018-04-01 14:46:37
  */
 cc.Class({
     extends: cc.Component,
@@ -380,11 +380,14 @@ cc.Class({
             //接听电话之后返回游戏
             var self = this;
             if(cc.sys.os === cc.sys.OS_ANDROID){
+                //为暂停按钮添加点击事件
                 self.pause.on('touchstart',function(){
-                    //如果是触摸了返回按钮之后自动返回游戏逻辑
-                    cc.director.resume();
                     //将该节点隐藏
                     self.pause.active = false;
+                    //如果是触摸了返回按钮之后自动返回游戏逻辑
+                    cc.director.resume();
+                    //重新将全局对象的是否暂停游戏的标记重置为false表示开始游戏不用暂停游戏了
+                    Global.isPause = false;
                 })
             }
             self.pause.on('mousedown',function(){
@@ -392,6 +395,7 @@ cc.Class({
                 cc.director.resume();
                 //将该节点隐藏
                 self.pause.active = false;
+                Global.isPause = false;
             })
         }
     },
